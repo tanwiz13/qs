@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import {SafeAreaView, ScrollView, Text} from 'react-native';
 import {Input} from '../widgets/Input';
 import {Button} from '../widgets/Button';
+import Storage from '../utils/storage';
+import constants from '../utils/constants';
+import validation from '../utils/validation';
 
 interface SetupPinProps {
   navigation: any;
@@ -15,6 +18,18 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
   const [password, setPassword] = useState<string>('');
   const [confirmedPassword, setConfirmedPassword] = useState<string>('');
   const [pin, setPin] = useState<string>('');
+
+  const {validateEmail, validateName} = validation;
+
+  const onRegister = async () => {
+    if (validateEmail(email) && validateName(fullName)) {
+      await Storage.add(constants.EMAIL, email);
+      await Storage.add(constants.FULLNAME, fullName);
+      navigation.navigate('Login', {
+        data: {email, fullName, password, pin},
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={{}}>
@@ -59,10 +74,7 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
         />
         <Button
           onClick={() => {
-            console.log('>>>>', email, fullName);
-            navigation.navigate('Login', {
-              data: {email, fullName, password, pin},
-            });
+            onRegister();
           }}
           buttonLabel="Register with pin"
           disabled={!email || !fullName}
