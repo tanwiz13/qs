@@ -19,12 +19,18 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
   const [confirmedPassword, setConfirmedPassword] = useState<string>('');
   const [pin, setPin] = useState<string>('');
 
-  const {validateEmail, validateName} = validation;
+  const {validateEmail, validateName, validatePassword} = validation;
 
   const onRegister = async () => {
-    if (validateEmail(email) && validateName(fullName)) {
-      await Storage.add(constants.EMAIL, email);
-      await Storage.add(constants.FULLNAME, fullName);
+    if (
+      validateEmail(email) &&
+      validateName(fullName) &&
+      validatePassword(password) &&
+      password === confirmedPassword &&
+      pin
+    ) {
+      await Storage.add(constants.PIN, pin);
+      await Storage.add(constants.REGISTRATION_SUCCESS, 'true');
       navigation.navigate('Login', {
         data: {email, fullName, password, pin},
       });
@@ -32,7 +38,7 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
   };
 
   return (
-    <SafeAreaView style={{}}>
+    <SafeAreaView>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{padding: 30}}>
@@ -54,6 +60,7 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
         <Input
           placeholder="Password"
           value={password}
+          secureTextEntry
           onChangeText={(value: string) => {
             setPassword(value);
           }}
@@ -61,6 +68,7 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
         <Input
           placeholder="Confirm Password"
           value={confirmedPassword}
+          secureTextEntry
           onChangeText={(value: string) => {
             setConfirmedPassword(value);
           }}
