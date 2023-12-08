@@ -1,6 +1,4 @@
-export default {
-  EMAIL: 'email',
-  FULLNAME: 'fullame',
+export const StorageKeys = {
   PIN: 'pin',
   REGISTRATION_SUCCESS: 'registration_success',
 };

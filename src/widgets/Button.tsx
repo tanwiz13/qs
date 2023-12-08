@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 15,
     backgroundColor: '#0F1B26',
+    marginVertical: 20,
   },
   disabled: {
     backgroundColor: 'gray',

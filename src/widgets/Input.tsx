@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   StyleSheet,
+  Text,
   TextInput,
   TextInputProps,
   TextStyle,
@@ -12,6 +13,7 @@ interface InputProps extends TextInputProps {
   style?: TextStyle;
   value?: string;
   placeholder: string;
+  error?: string;
 }
 
 const styles = StyleSheet.create({
@@ -25,6 +27,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffff',
     marginVertical: 10,
   },
+  errorContainer: {
+    borderColor: '#E8324A',
+  },
+  errorText: {
+    marginStart: 5,
+    color: '#E8324A',
+    fontSize: 12,
+  },
 });
 
 const Input = ({
@@ -32,6 +42,7 @@ const Input = ({
   value,
   disabled = false,
   placeholder = '',
+  error,
   ...rest
 }: InputProps) => (
   <View style={style}>
@@ -39,12 +50,13 @@ const Input = ({
       value={value}
       placeholder={placeholder}
       placeholderTextColor={'gray'}
-      style={[styles.textInput]}
+      style={[styles.textInput, !!error && styles.errorContainer]}
       onChangeText={rest.onChangeText}
       editable={!disabled}
       returnKeyType={'done'}
       {...rest}
     />
+    {!!error && <Text style={styles.errorText}>{error}</Text>}
   </View>
 );
 

@@ -3,7 +3,7 @@ import {SafeAreaView, ScrollView} from 'react-native';
 import {Input} from '../widgets/Input';
 import {Button} from '../widgets/Button';
 import Storage from '../utils/storage';
-import constants from '../utils/constants';
+import {StorageKeys} from '../utils/constants';
 
 interface SetupPinProps {
   navigation: any;
@@ -11,12 +11,14 @@ interface SetupPinProps {
 
 function Login({navigation}: SetupPinProps): JSX.Element {
   const [pin, setPin] = useState<string>('');
+  const [pinError, setPinError] = useState<string>('');
 
   const onEnterPin = async () => {
-    const storedPin = await Storage.get(constants.PIN);
-    console.log('>>>>>>stored pin', storedPin);
+    const storedPin = await Storage.get(StorageKeys.PIN);
     if (pin === storedPin) {
       navigation.navigate('Home');
+    } else {
+      setPinError('Invalid Pin!');
     }
   };
 
@@ -28,7 +30,9 @@ function Login({navigation}: SetupPinProps): JSX.Element {
         <Input
           placeholder="Pin"
           value={pin}
+          error={pinError}
           onChangeText={(value: string) => {
+            setPinError('');
             setPin(value);
           }}
         />

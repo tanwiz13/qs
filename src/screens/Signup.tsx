@@ -7,10 +7,18 @@ import validation from '../utils/validation';
 function Signup({navigation}: {navigation: any}): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [fullName, setFullName] = useState<string>('');
+  const [fullNameError, setFullNameError] = useState<string>('');
+  const [emailError, setEmailError] = useState<string>('');
 
   const {validateEmail, validateName} = validation;
 
   const onRegister = async () => {
+    if (!validateEmail(email)) {
+      setEmailError('Invalid email!');
+    }
+    if (!validateName(fullName)) {
+      setFullNameError('Invalid input!');
+    }
     if (validateEmail(email) && validateName(fullName)) {
       navigation.navigate('SetupPin', {
         data: {email, fullName},
@@ -26,22 +34,26 @@ function Signup({navigation}: {navigation: any}): JSX.Element {
         <Text>Signup</Text>
         <Input
           placeholder="Full name"
+          error={fullNameError}
           value={fullName}
           onChangeText={(value: string) => {
+            setFullNameError('');
             setFullName(value);
           }}
         />
         <Input
           placeholder="Email"
+          error={emailError}
           value={email}
           onChangeText={(value: string) => {
+            setEmailError('');
             setEmail(value);
           }}
         />
         <Button
           onClick={async () => onRegister()}
           buttonLabel="Register"
-          disabled={!(validateEmail(email) && validateName(fullName))}
+          disabled={!email || !fullName}
         />
       </ScrollView>
     </SafeAreaView>

@@ -3,7 +3,7 @@ import {SafeAreaView, ScrollView, Text} from 'react-native';
 import {Input} from '../widgets/Input';
 import {Button} from '../widgets/Button';
 import Storage from '../utils/storage';
-import constants from '../utils/constants';
+import {StorageKeys} from '../utils/constants';
 import validation from '../utils/validation';
 
 interface SetupPinProps {
@@ -19,22 +19,70 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
   const [confirmedPassword, setConfirmedPassword] = useState<string>('');
   const [pin, setPin] = useState<string>('');
 
-  const {validateEmail, validateName, validatePassword} = validation;
+  const [errorObj, setErrorObj] = useState({
+    emailError: '',
+    fullNameError: '',
+    passwordError: '',
+    confirmedPasswordError: '',
+    pinError: '',
+  });
+
+  const {validateEmail, validateName, validatePassword, areAllElementsEmpty} =
+    validation;
 
   const onRegister = async () => {
+    if (!validateName(fullName)) {
+      setErrorObj(prevState => ({
+        ...prevState,
+        fullNameError: 'Invalid input!',
+      }));
+    }
+    if (!validateEmail(email)) {
+      setErrorObj(prevState => ({
+        ...prevState,
+        emailError: 'Invalid Email!',
+      }));
+    }
+    if (!validatePassword(password)) {
+      setErrorObj(prevState => ({
+        ...prevState,
+        passwordError: 'Password should be more than 6 characters!',
+      }));
+    }
+    if (password !== confirmedPassword) {
+      setErrorObj(prevState => ({
+        ...prevState,
+        confirmedPasswordError:
+          'Entered password does not match with above password!',
+      }));
+    }
+    if (!validatePassword(pin)) {
+      setErrorObj(prevState => ({
+        ...prevState,
+        pinError: 'Pin should be more than 6 characters!',
+      }));
+    }
     if (
       validateEmail(email) &&
       validateName(fullName) &&
       validatePassword(password) &&
       password === confirmedPassword &&
-      pin
+      pin &&
+      areAllElementsEmpty(Object.values(errorObj))
     ) {
-      await Storage.add(constants.PIN, pin);
-      await Storage.add(constants.REGISTRATION_SUCCESS, 'true');
+      await Storage.add(StorageKeys.PIN, pin);
+      await Storage.add(StorageKeys.REGISTRATION_SUCCESS, 'true');
       navigation.navigate('Login', {
         data: {email, fullName, password, pin},
       });
     }
+  };
+
+  const clearError = (keyName: string) => {
+    setErrorObj(prevState => ({
+      ...prevState,
+      [keyName]: '',
+    }));
   };
 
   return (
@@ -46,37 +94,47 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
         <Input
           placeholder="Full name"
           value={fullName}
+          error={errorObj.fullNameError}
           onChangeText={(value: string) => {
+            clearError('fullNameError');
             setFullName(value);
           }}
         />
         <Input
           placeholder="Email"
           value={email}
+          error={errorObj.emailError}
           onChangeText={(value: string) => {
+            clearError('emailError');
             setEmail(value);
           }}
         />
         <Input
           placeholder="Password"
           value={password}
+          error={errorObj.passwordError}
           secureTextEntry
           onChangeText={(value: string) => {
+            clearError('passwordError');
             setPassword(value);
           }}
         />
         <Input
           placeholder="Confirm Password"
+          error={errorObj.confirmedPasswordError}
           value={confirmedPassword}
           secureTextEntry
           onChangeText={(value: string) => {
+            clearError('confirmedPasswordError');
             setConfirmedPassword(value);
           }}
         />
         <Input
           placeholder="Pin"
           value={pin}
+          error={errorObj.pinError}
           onChangeText={(value: string) => {
+            clearError('pinError');
             setPin(value);
           }}
         />
@@ -85,7 +143,9 @@ function SetupPin({navigation, route}: SetupPinProps): JSX.Element {
             onRegister();
           }}
           buttonLabel="Register with pin"
-          disabled={!email || !fullName}
+          disabled={
+            !email || !fullName || !password || !confirmedPassword || !pin
+          }
         />
       </ScrollView>
     </SafeAreaView>

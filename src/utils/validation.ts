@@ -52,9 +52,14 @@ const validatePasswordSecure = (password: string) => {
   return '';
 };
 
+const areAllElementsEmpty = (arr: string[]) => {
+  return arr.every((element: string) => element === '');
+};
+
 export default {
   validateEmail,
   validatePassword,
   validateName,
   validatePasswordSecure,
+  areAllElementsEmpty,
 };

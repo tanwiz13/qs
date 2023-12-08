@@ -6,7 +6,7 @@ import SetupPin from './src/screens/SetupPin';
 import Home from './src/screens/Home';
 import Login from './src/screens/Login';
 import Storage from './src/utils/storage';
-import constants from './src/utils/constants';
+import {StorageKeys} from './src/utils/constants';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,8 +14,8 @@ function App(): JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
 
   const getLoginStatus = async () => {
-    const isRegistered = await Storage.get(constants.REGISTRATION_SUCCESS);
-    const storedPin = await Storage.get(constants.PIN);
+    const isRegistered = await Storage.get(StorageKeys.REGISTRATION_SUCCESS);
+    const storedPin = await Storage.get(StorageKeys.PIN);
 
     if (Boolean(isRegistered) && storedPin) {
       setIsLoggedIn(true);
