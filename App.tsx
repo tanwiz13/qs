@@ -28,7 +28,10 @@ function App(): JSX.Element {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
         {!isLoggedIn ? (
           <>
             <Stack.Screen name="Signup" component={Signup} />
